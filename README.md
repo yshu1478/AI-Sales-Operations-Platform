@@ -12,6 +12,7 @@
 - [技术栈](#技术栈)
 - [数据与 AI 说明](#数据与-ai-说明)
 - [项目亮点](#项目亮点)
+- [项目预览](#项目预览)
 - [项目结构](#项目结构)
 - [快速开始](#快速开始)
 - [测试与质量检查](#测试与质量检查)
@@ -141,6 +142,26 @@ $env:DEEPSEEK_MODEL = "deepseek-chat"
 7. **本地可运行与可复现**：无需外部服务即可运行，适合产品演示和能力验证。
 8. **增量式设计**：AI 能力嵌入现有页面，不破坏原有 CRM 和分析工作流。
 
+## 项目预览
+
+以下截图展示平台的主要使用场景，顺序为 Dashboard、CRM、Sales Funnel、AI Analysis。
+
+### Dashboard
+
+![销售运营分析 Dashboard](screenshots/dashboard.png)
+
+### CRM
+
+![CRM 商机台账](screenshots/crm.png)
+
+### Sales Funnel
+
+![销售漏斗分析](screenshots/sales-funnel.png)
+
+### AI Analysis
+
+![AI 销售分析](screenshots/ai-analysis.png)
+
 ## 项目结构
 
 ```text
@@ -149,6 +170,11 @@ $env:DEEPSEEK_MODEL = "deepseek-chat"
 ├── test_app.py           # 自动化测试
 ├── requirements.txt      # Python 依赖
 ├── sales_opportunities.db # 运行后生成的本地 SQLite 台账（不纳入版本管理）
+├── screenshots/           # 项目预览截图
+│   ├── dashboard.png
+│   ├── crm.png
+│   ├── sales-funnel.png
+│   └── ai-analysis.png
 └── README.md             # 项目说明
 ```
 
