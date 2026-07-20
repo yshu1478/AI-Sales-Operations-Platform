@@ -22,6 +22,7 @@ from app import (
     generate_ai_action_recommendations,
     build_ai_analysis_prompt,
     parse_ai_analysis_response,
+    request_deepseek_analysis,
     TODAY,
 )
 
@@ -155,6 +156,17 @@ def test_ai_response_parser_falls_back_to_raw_text():
     assert parse_ai_analysis_response(invalid_json) == {"raw_text": invalid_json}
     invalid_probability = '{"summary":"x","probability":120,"risk_level":"高","risk_reasons":[],"next_actions":[],"contact_time":"明天","contact_person":"负责人"}'
     assert parse_ai_analysis_response(invalid_probability) == {"raw_text": invalid_probability}
+
+
+def test_deepseek_requires_api_key_without_affecting_local_analysis(monkeypatch):
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    customer = generate_sales_data(rows=1, seed=78).iloc[0]
+    customer["商机ID"] = 1
+    detail = build_customer_detail(customer)
+
+    assert ai_risk_prediction(customer, pd.DataFrame([customer]))["level"]
+    with pytest.raises(RuntimeError, match="DEEPSEEK_API_KEY"):
+        request_deepseek_analysis(customer, detail)
 
 
 def test_unified_plotly_theme_uses_shared_design_tokens():

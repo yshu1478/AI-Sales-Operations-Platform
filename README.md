@@ -15,7 +15,6 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-Analytics-150458?logo=pandas&logoColor=white)
-![License](https://img.shields.io/badge/License-Not%20Specified-lightgrey)
 
 ## 📑 目录
 
@@ -90,6 +89,7 @@ AI 能力嵌入现有分析看板和客户详情，不新增独立 AI 系统：
 - **AI 风险预警**：综合跟进间隔、商机阶段和金额等信号，对商机进行可解释的风险评分。
 - **AI 跟进建议**：根据当前阶段、金额、负责人和超期状态生成下一步销售动作建议。
 - **AI 行动建议**：至少生成 5 条包含“建议、提出原因、业务帮助、优先级”的动态建议，覆盖商机数量、转化率、在途金额、超期未跟进和负责人等指标。
+- **DeepSeek 实时分析（可选）**：配置 API Key 后，可在客户详情页主动发起 LLM 分析，获得成交概率、风险原因和下一步建议。
 
 ### 4. 💾 数据管理
 
@@ -117,19 +117,19 @@ AI 能力嵌入现有分析看板和客户详情，不新增独立 AI 系统：
 
 首次启动时，系统使用固定随机种子生成结构稳定的模拟销售数据。之后应用读取项目目录下的 `sales_opportunities.db`，台账保存后的数据会成为后续分析和 AI 计算的数据来源。
 
-### 🧮 AI 计算方式
+### 🧮 本地规则分析（默认能力）
 
-当前版本采用本地、可解释的统计分析和规则评分，不调用外部大模型 API：
+销售日报、客户画像、风险评分、跟进建议和行动建议由本地统计与规则逻辑动态计算。这部分能力不会调用外部大模型 API，也不需要配置 API Key：
 
 - 风险评分使用跟进天数、阶段、金额分位和成交状态等特征。
 - 客户画像使用当前客户与全量台账的行业、渠道、负责人聚合结果。
 - 行动建议使用当前数据实时计算，建议内容、涉及金额、负责人和优先级会随数据变化。
 
-因此，当前版本适合作为 AI 销售运营逻辑验证和产品原型，不应直接替代企业正式的销售预测、信用判断或经营决策系统。
+因此，即使没有配置 DeepSeek，KPI、CRM、销售漏斗和全部本地规则分析仍可正常使用。相关结果适合作为 AI 销售运营逻辑验证和产品原型，不应直接替代企业正式的销售预测、信用判断或经营决策系统。
 
 ### 🔌 DeepSeek 实时 AI 分析
 
-在客户详情页点击“🧠 AI分析”，系统会将当前客户与商机信息发送到配置的 DeepSeek OpenAI 兼容接口，并在页面展示：
+DeepSeek 是独立于本地规则分析的可选能力。只有在已配置 API Key 且用户在客户详情页主动点击“🧠 AI分析”时，系统才会将当前客户、商机和模拟详情信息发送到配置的 DeepSeek OpenAI 兼容接口，并在页面展示：
 
 - 风险分析及判断依据；
 - LLM 返回的成交概率；
@@ -143,7 +143,7 @@ $env:DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 $env:DEEPSEEK_MODEL = "deepseek-chat"
 ```
 
-也可以使用其他 OpenAI 兼容服务，只需替换 `DEEPSEEK_BASE_URL` 和 `DEEPSEEK_MODEL`。API Key 只从环境变量读取，不要写入 `app.py`、README 或提交到 Git 仓库。未配置 Key 时，原有本地 AI 分析仍可使用，点击按钮会给出配置提示。
+也可以使用其他 OpenAI 兼容服务，只需替换 `DEEPSEEK_BASE_URL` 和 `DEEPSEEK_MODEL`。API Key 只从环境变量读取，不要写入 `app.py`、README 或提交到 Git 仓库。未配置 Key 时，DeepSeek 请求不会发出，页面会给出配置提示，原有本地规则分析不受影响。
 
 ## ✨ 项目亮点（Features）
 
@@ -155,7 +155,7 @@ $env:DEEPSEEK_MODEL = "deepseek-chat"
 | 🧩 CRM 客户管理 | 覆盖商机台账、客户详情、联系人和跟进记录。 |
 | 🔻 销售漏斗分析 | 直观呈现各阶段商机分布，辅助判断管道健康度。 |
 | 📈 数据可视化 | 通过 KPI、渠道分析和 Plotly 图表快速理解业务表现。 |
-| 💻 本地可运行 | 使用模拟数据即可启动，适合演示、学习和校招项目展示。 |
+| 💻 本地可运行 | 不配置外部服务也可使用核心功能，适合演示、学习和校招项目展示。 |
 | 🔄 增量式设计 | AI 能力嵌入现有页面，保留原有 CRM 与分析工作流。 |
 
 1. **AI 销售分析**：从“看数据”延伸到“解释数据和识别问题”。
@@ -164,7 +164,7 @@ $env:DEEPSEEK_MODEL = "deepseek-chat"
 4. **CRM 流程模拟**：覆盖商机台账、客户详情、联系人和跟进记录等日常流程。
 5. **企业销售运营场景**：以销售经理的管道管理、资源分配和预测决策为核心。
 6. **数据可视化**：通过 KPI、渠道分析和销售漏斗呈现关键经营信息。
-7. **本地可运行与可复现**：无需外部服务即可运行，适合产品演示和能力验证。
+7. **本地可运行与可复现**：无需外部服务即可运行核心功能，适合产品演示和能力验证。
 8. **增量式设计**：AI 能力嵌入现有页面，不破坏原有 CRM 和分析工作流。
 
 ## 🖼️ 项目预览
@@ -193,16 +193,24 @@ $env:DEEPSEEK_MODEL = "deepseek-chat"
 
 ```text
 .
-├── app.py                # Streamlit 应用、分析逻辑和 CRM 页面
-├── test_app.py           # 自动化测试
-├── requirements.txt      # Python 依赖
-├── sales_opportunities.db # 运行后生成的本地 SQLite 台账（不纳入版本管理）
-├── screenshots/           # 项目预览截图
+├── .github/
+│   └── workflows/
+│       └── tests.yml             # GitHub Actions 自动测试
+├── .streamlit/
+│   └── config.toml               # Streamlit 主题配置
+├── screenshots/                  # 项目预览截图
 │   ├── dashboard.png
 │   ├── crm.png
 │   ├── sales-funnel.png
 │   └── ai-analysis.png
-└── README.md             # 项目说明
+├── styles/
+│   ├── style.css                 # 全站统一样式
+│   └── theme.py                  # 主题组件与 Plotly 配置
+├── app.py                        # Streamlit 应用、分析逻辑和 CRM 页面
+├── test_app.py                   # 自动化测试
+├── requirements.txt              # Python 依赖
+├── sales_opportunities.db        # 运行后生成的本地 SQLite 台账（不纳入版本管理）
+└── README.md                     # 项目说明
 ```
 
 ## ⚡ 快速开始
@@ -269,6 +277,8 @@ macOS 或 Linux：
 
 测试覆盖数据生成、指标计算、筛选、数据库持久化、数据校验、客户详情、AI 风险评分和 AI 行动建议。
 
+仓库同时配置 GitHub Actions，在推送代码或创建 Pull Request 时自动执行 pytest 和 Python 语法编译检查。自动测试不需要配置 DeepSeek API Key，也不会向外部 AI 服务发起请求。
+
 ## 💼 项目价值
 
 这个项目不是简单的数据可视化，而是对企业销售运营工作流程的模拟：销售人员维护客户和商机，销售经理观察管道与漏斗，系统识别超期和风险，并将数据转化为下一步行动建议。
@@ -285,7 +295,7 @@ macOS 或 Linux：
 
 后续可按企业级产品化优先级逐步演进：
 
-- 接入真实 LLM，并增加可控的企业知识库检索
+- 扩展可配置 LLM 支持，并增加可控的企业知识库检索
 - 将 SQLite 升级为 PostgreSQL 等生产级数据库
 - 完成 CSV 批量导入、字段映射和导入错误报告
 - 增加用户权限、角色和数据范围控制
@@ -300,7 +310,8 @@ macOS 或 Linux：
 
 - 当前项目只使用模拟销售数据。
 - 联系人电话采用脱敏格式，邮箱使用 `example.demo` 演示域名。
-- 当前版本不向外部 AI 服务发送数据。
+- 本地规则分析不会向外部 AI 服务发送数据。
+- 只有在用户配置 API Key 并主动点击“AI分析”时，当前客户、商机和模拟详情信息才会发送到配置的 OpenAI 兼容服务。
 - 生产环境使用前，应补充身份认证、权限控制、加密存储、审计日志、备份恢复和敏感数据治理。
 
 ## 📄 许可证

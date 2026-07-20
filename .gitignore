@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 sales_opportunities.db
 .env
+.streamlit/secrets.toml
